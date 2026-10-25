@@ -577,78 +577,20 @@ function render(msg){
 }
 /* offset limit = frame sourceSize (x -> width, y -> height); never below an already-stored value */
 function offLim(f,a){const base=a==="x"?f.sw:f.sh;return Math.max(base||0,Math.ceil(Math.abs(f["d"+a]||0)),1)}
-/* feet = lowest visible pixels of the trimmed sprite: y = bottom edge, x = mean x of the bottom band (canvas coords) */
+/* feet: y = bottom edge of the lowest visible pixel; x = midpoint between the leftmost and rightmost foot
+   (extent of visible pixels in the bottom "foot zone", so it also works when one foot is higher than the other) */
 function feetOf(f){
   if(f.empty||!f.canvas||!f.w||!f.h)return null;
-  if(f._ft)return f._ft;
+  if(f._ft2)return f._ft2;
   const w=f.w,h=f.h,d=f.canvas.getContext("2d",{willReadFrequently:true}).getImageData(0,0,w,h).data,T=40;
   let yb=-1;for(let y=h-1;y>=0&&yb<0;y--)for(let x=0;x<w;x++)if(d[(y*w+x)*4+3]>=T){yb=y;break}
   if(yb<0)return null;
-  const band=Math.max(1,Math.round(h*.04));let sx=0,n=0;
-  for(let y=Math.max(0,yb-band+1);y<=yb;y++)for(let x=0;x<w;x++)if(d[(y*w+x)*4+3]>=T){sx+=x+.5;n++}
-  return f._ft=[sx/n,yb+1];
-}
-/* ---------- rename (single + batch) ---------- */
-const cleanName=n=>String(n).replace(/\.(png|jpe?g|webp)$/i,"").replace(/[\\\/:*?"<>|\u0000-\u001f]/g,"").trim();
-const selList=()=>S.route==="unpack"?S.frames.filter(f=>S.pick&&S.pick.has(f)):S.frames.filter(f=>S.sel.has(f));
-function applyNames(pairs){
-  const mp=new Map(pairs.map(([f,n])=>[f,cleanName(n)])),ch=[...mp].filter(([f,n])=>n!==f.name);
-  if(!ch.length){toast(t("rnochg"));return true}
-  if(ch.some(([f,n])=>!n))return t("rbad");
-  const seen=new Map();
-  for(const f of S.frames){const n=mp.has(f)?mp.get(f):f.name,k=n.toLowerCase();
-    if(seen.has(k)&&(mp.has(f)||mp.has(seen.get(k))))return t("rdup")(n);seen.set(k,f)}
-  const cur=GF()[S.idx],og=new Set(ch.map(([f])=>f.g)),aff=S.frames.filter(f=>og.has(f.g)||ch.some(([x])=>x===f)),
-    snap=aff.map(f=>[f,f.name,f.lock]);
-  ch.forEach(([f,n])=>{f.name=n});aff.forEach(f=>{f.lock=true});
-  sortF(true);S.res=null;
-  if(cur){S.group=cur.g;S.idx=Math.max(0,GF().indexOf(cur))}
-  render();persist();
-  toast(t("rdone")(ch.length),()=>{snap.forEach(([f,n,l])=>{f.name=n;f.lock=l});sortF(true);S.res=null;S.idx=0;render();persist()});
-  return true;
-}
-function dlg(title,body,onOk){
-  const ov=document.createElement("div");ov.className="ov";const bx=document.createElement("div");bx.className="dlg";
-  const h=document.createElement("h3");h.textContent=title;const act=document.createElement("div");act.className="act";
-  const mkb=(txt,cls)=>{const b=document.createElement("button");b.className=cls;b.textContent=txt;return b};
-  const c=mkb(t("rcancel"),"b g"),ok=mkb(t("rapply"),"b"),er=document.createElement("div");er.className="err";er.hidden=true;act.append(c,ok);bx.append(h,body,er,act);ov.append(bx);document.body.append(ov);
-  const close=()=>ov.remove();
-  c.onclick=close;ov.onmousedown=e=>{if(e.target===ov)close()};
-  ov.onkeydown=e=>{if(e.key==="Escape")close();else if(e.key==="Enter"&&e.target.tagName==="INPUT"){e.preventDefault();ok.click()}};
-  ok.onclick=()=>{const r=onOk();if(typeof r==="string"){er.textContent=r;er.hidden=false;return}close()};
-  bx.addEventListener("input",()=>{er.hidden=true});
-  return ov;
-}
-function fld(label,input){const l=document.createElement("label");l.textContent=label;const d=document.createElement("div");d.append(l,input);return d}
-function inp(type,val){const i=document.createElement("input");i.type=type;i.value=val;i.autocomplete="off";i.spellcheck=false;return i}
-function renameOne(f){
-  const body=document.createElement("div"),i=inp("text",f.name);body.append(fld(t("rnT"),i));
-  const ov=dlg(t("rnT"),body,()=>applyNames([[f,i.value]]));
-  setTimeout(()=>{i.focus();i.select()},30);return ov;
-}
-function batchDlg(list){
-  if(!list.length){toast(t("nopick"));return}
-  const body=document.createElement("div"),md=document.createElement("select");
-  ["rm_fr","rm_ps","rm_nu"].forEach((k,i)=>{const o=document.createElement("option");o.value=i;o.textContent=t(k);md.append(o)});
-  const find=inp("text",""),repl=inp("text",""),cs=inp("checkbox",""),pre=inp("text",""),suf=inp("text",""),
-    base=inp("text",list[0].g||list[0].name),start=inp("number","1"),sep=inp("text",list[0].sep||"_"),zp=inp("number","0");
-  start.min=0;zp.min=0;zp.max=8;
-  const cb=document.createElement("label");cb.className="cb";cb.append(cs,document.createTextNode(t("rcase")));
-  const g=[[fld(t("rfind"),find),fld(t("rrepl"),repl),cb],[fld(t("rpre"),pre),fld(t("rsuf"),suf)],
-    [fld(t("rbase"),base),(()=>{const r=document.createElement("div");r.className="row2";r.append(fld(t("rstart"),start),fld(t("rsep"),sep),fld(t("rzpad"),zp));return r})()]]
-    .map(a=>{const d=document.createElement("div");d.append(...a);return d});
-  const pv=document.createElement("div");pv.className="pv";
-  body.append(fld(" ",md),...g,pv);body.firstChild.firstChild.remove();
-  const calc=()=>{const m=+md.value;return list.map((f,i)=>{
-    if(m===0){if(!find.value)return f.name;return cs.checked?f.name.split(find.value).join(repl.value):f.name.replace(new RegExp(find.value.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),"gi"),()=>repl.value)}
-    if(m===1)return pre.value+f.name+suf.value;
-    const n=String((+start.value||0)+i).padStart(Math.max(0,Math.min(8,+zp.value||0)),"0");return (base.value||f.name)+(base.value?sep.value:"")+n});};
-  const upd=()=>{g.forEach((d,i)=>d.hidden=i!==+md.value);const nn=calc();pv.textContent="";
-    const hd=document.createElement("div");hd.textContent=t("rprev")+" · "+list.length;pv.append(hd);
-    list.slice(0,6).forEach((f,i)=>{const d=document.createElement("div");d.append(f.name+" → ");const b=document.createElement("b");b.textContent=cleanName(nn[i])||"∅";d.append(b);pv.append(d)});
-    if(list.length>6){const d=document.createElement("div");d.textContent="…";pv.append(d)}};
-  body.oninput=body.onchange=upd;upd();
-  return dlg(t("rnB")(list.length),body,()=>applyNames(list.map((f,i)=>[f,calc()[i]])));
+  const zone=Math.max(4,Math.round(h*.14)),y0=Math.max(0,yb-zone+1),col=new Uint8Array(w);
+  for(let y=y0;y<=yb;y++)for(let x=0;x<w;x++)if(d[(y*w+x)*4+3]>=T)col[x]=1;
+  const runs=[];for(let x=0;x<w;x++)if(col[x]){let e=x;while(e+1<w&&col[e+1])e++;runs.push([x,e]);x=e}
+  let use=runs.filter(r=>r[1]-r[0]+1>=2);if(!use.length)use=runs;
+  const l=use[0][0],r=use[use.length-1][1]+1;
+  return f._ft2=[(l+r)/2,yb+1];
 }
 function loop(){clearInterval(S.timer);const n=GF().length;if(S.play&&n>1)S.timer=setInterval(()=>{S.idx=(S.idx+1)%n;sync()},1000/S.fps)}
 function sync(){
