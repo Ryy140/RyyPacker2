@@ -163,8 +163,26 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;bac
 .fr .x{flex:none;width:28px;height:28px;border:1px solid var(--bd);background:var(--card);color:var(--mut);border-radius:8px;cursor:pointer;font-size:13px;transition:all .12s}
 .fr .x:hover{background:#e5484d;border-color:#e5484d;color:#fff}
 .flist .empty{grid-column:1/-1;text-align:center;color:var(--mut);padding:22px;font-size:13px}
-#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:40;display:flex;align-items:center;gap:14px;background:var(--pill);color:var(--pillfg);padding:10px 12px 10px 18px;border-radius:12px;font-size:13px;font-weight:500;box-shadow:var(--sh2);animation:rise .2s ease both}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:80;display:flex;align-items:center;gap:14px;background:var(--pill);color:var(--pillfg);padding:10px 12px 10px 18px;border-radius:12px;font-size:13px;font-weight:500;box-shadow:var(--sh2);animation:rise .2s ease both}
 #toast[hidden]{display:none}
+.fr .ed{flex:none;width:28px;height:28px;border:1px solid var(--bd);background:var(--card);color:var(--mut);border-radius:8px;cursor:pointer;font-size:13px;transition:all .12s}
+.fr .ed:hover{border-color:var(--ac);color:var(--ac)}
+.list div.pk .ed{position:absolute;top:6px;right:6px;z-index:1;width:26px;height:26px;border:1px solid var(--bd);background:var(--card);color:var(--fg);border-radius:8px;cursor:pointer;font-size:12px;padding:0}
+.ov{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.55);display:flex;align-items:flex-start;justify-content:center;padding:max(16px,6vh) 16px 16px;overflow:auto}
+.dlg{width:100%;max-width:420px;max-height:90vh;overflow:auto;background:var(--card);color:var(--fg);border:1px solid var(--bd);border-radius:16px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.dlg h3{margin:0 0 8px;font-size:16px}
+.dlg label{display:block;font-size:12px;color:var(--mut);margin:10px 0 4px}
+.dlg input[type=text],.dlg input[type=number],.dlg select{width:100%;box-sizing:border-box;background:var(--inp);color:var(--fg);border:1px solid var(--bd);border-radius:10px;padding:9px 12px;font:inherit;font-size:16px}
+.dlg input:focus,.dlg select:focus{border-color:var(--ac);outline:none}
+.dlg label.cb{display:flex;align-items:center;gap:8px;color:var(--fg);font-size:13px}
+.dlg label.cb input{width:auto;accent-color:var(--ac)}
+.dlg .row2{display:flex;gap:10px}.dlg .row2>div{flex:1;min-width:0}
+.dlg [hidden]{display:none!important}
+.dlg .pv{margin-top:12px;background:var(--card2);border:1px dashed var(--dash);border-radius:10px;padding:8px 10px;font:12px "IBM Plex Mono",ui-monospace,monospace;max-height:160px;overflow:auto;word-break:break-all;color:var(--mut)}
+.dlg .pv b{color:var(--fg)}
+.dlg .err{margin-top:12px;padding:8px 10px;border-radius:10px;background:rgba(229,72,77,.14);color:#e5484d;font-size:13px;font-weight:600;word-break:break-all}
+.dlg .act{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+
 #toast button{background:rgba(128,128,128,.25);color:inherit;border:0;border-radius:8px;padding:5px 12px;font:inherit;font-weight:700;cursor:pointer}
 footer{border-top:1px solid var(--bd);padding:16px 24px;font-size:11px;color:var(--mut);text-align:center}
 
@@ -199,11 +217,11 @@ footer{border-top:1px solid var(--bd);padding:16px 24px;font-size:11px;color:var
 const D={en:{pack:"Pack",unpack:"Unpack",repack:"Repack",tag:"Sprite folders in, cocos2d-x atlas and plist out.",runs:"runs in your browser · nothing uploaded",foot:"format 2 plist · trimmed · no rotation · tight non-power-of-two atlas",
 h_pack:"Choose your sprite frames",rotFixed:n=>`${n} rotated frame${n>1?"s":""} straightened. The new plist has rotated = false for every frame.`,rotIgn:n=>`Rotated flag ignored for ${n} frame${n>1?"s":""}; all frames treated as straight.`,ign:"Ignore the rotated flag (treat every frame as already straight)",s_pack:"Every image you choose, or every image inside a ZIP, becomes one frame.",b_zip:"Choose ZIP",add_zip:"Add ZIP",badZip:"Could not read this ZIP file.",noImgZip:"No images found in this ZIP.",b_pack:"Choose images",h_un:"Choose an atlas and its plist",s_un:"Pick one atlas PNG and its .plist file.",b_un:"Choose files",
 frames:"frames",add:"Add",clear:"Clear",png:"Download PNG",plist:"Download plist",zip:"Download ZIP",anim:"Animation preview",animS:"Placed by offset, from the anchor where the lines cross. Preview only — the anchor is set in your game code, not in the plist.",
-a0:"bottom center",a1:"bottom left",a2:"center",a3:"top left",onion:"Onion skin",o0:"Off",o1:"Previous",o2:"Next",o3:"Both",off:"plist offset",copy:n=>`Copy this offset to all ${n} frames`,fr:(i,n,a,x,y)=>`Frame ${i} of ${n} · from ${a} {${x},${y}}`,name:"Atlas name",pad:"Padding (px)",tag_unpack:"Break an atlas back into individual sprite frames.",tag_repack:"Load an atlas and its plist, then repack it into a new, tighter atlas.",grp:"Animation",fr_title:"Frames",search:"Search frames…",sel_all:"Select all",sel_none:"Deselect",del_sel:n=>`Delete selected (${n})`,del_one:"Delete this frame",deleted:n=>`Deleted ${n} frame${n>1?"s":""}`,undo:"Undo",none:"No frames match.",picked:(n,m)=>`${n} of ${m} selected`,zip_sel:n=>`Download ZIP (${n})`,nopick:"Select at least one frame.",needBoth:"Need both a PNG and a .plist.",got:n=>`Got ${n}. Now choose the other file.`,badPlist:"Could not read this .plist. It must be an XML plist (not binary).",noFrames:"No frames found in this .plist.",empty:"No usable files found."},
+a0:"bottom center",a1:"bottom left",a2:"center",a3:"top left",onion:"Onion skin",o0:"Off",o1:"Previous",o2:"Next",o3:"Both",off:"plist offset",feet1:"Auto feet · this frame",rn:"Rename",rnN:n=>`Rename (${n})`,rnT:"Frame name",rnB:n=>`Batch rename · ${n} frames`,rm_fr:"Find & replace",rm_ps:"Prefix / suffix",rm_nu:"Name + number",rfind:"Find",rrepl:"Replace with",rcase:"Match case",rpre:"Prefix",rsuf:"Suffix",rbase:"Base name",rstart:"Start at",rsep:"Separator",rzpad:"Zero pad",rprev:"Preview",rapply:"Apply",rcancel:"Cancel",rdup:n=>`Name already used: ${n}`,rbad:"Name can't be empty.",rdone:n=>`Renamed ${n} frame${n>1?"s":""}`,rnochg:"No names changed.",feetN:n=>`Auto feet · all ${n} frames`,feetDone:n=>`Feet aligned on ${n} frame${n>1?"s":""}`,copy:n=>`Copy this offset to all ${n} frames`,fr:(i,n,a,x,y)=>`Frame ${i} of ${n} · from ${a} {${x},${y}}`,name:"Atlas name",pad:"Padding (px)",tag_unpack:"Break an atlas back into individual sprite frames.",tag_repack:"Load an atlas and its plist, then repack it into a new, tighter atlas.",grp:"Animation",fr_title:"Frames",search:"Search frames…",sel_all:"Select all",sel_none:"Deselect",del_sel:n=>`Delete selected (${n})`,del_one:"Delete this frame",deleted:n=>`Deleted ${n} frame${n>1?"s":""}`,undo:"Undo",none:"No frames match.",picked:(n,m)=>`${n} of ${m} selected`,zip_sel:n=>`Download ZIP (${n})`,nopick:"Select at least one frame.",needBoth:"Need both a PNG and a .plist.",got:n=>`Got ${n}. Now choose the other file.`,badPlist:"Could not read this .plist. It must be an XML plist (not binary).",noFrames:"No frames found in this .plist.",empty:"No usable files found."},
 id:{pack:"Bungkus",unpack:"Bongkar",repack:"Bungkus Ulang",tag:"Folder sprite masuk, atlas cocos2d-x dan plist keluar.",runs:"berjalan di browser Anda · tidak ada yang diunggah",foot:"format 2 plist · dipangkas · tanpa rotasi · atlas non-power-of-two yang rapat",
 h_pack:"Pilih frame sprite Anda",rotFixed:n=>`${n} frame rotated diluruskan. Plist baru berisi rotated = false untuk semua frame.`,rotIgn:n=>`Flag rotated diabaikan untuk ${n} frame; semua frame dianggap sudah lurus.`,ign:"Abaikan flag rotated (anggap semua frame sudah lurus)",s_pack:"Setiap gambar yang Anda pilih, atau yang ada di dalam ZIP, menjadi satu frame.",b_zip:"Pilih ZIP",add_zip:"Tambah ZIP",badZip:"File ZIP tidak bisa dibaca.",noImgZip:"Tidak ada gambar di dalam ZIP ini.",b_pack:"Pilih gambar",h_un:"Pilih atlas dan plist-nya",s_un:"Pilih satu PNG atlas dan file .plist-nya.",b_un:"Pilih file",
 frames:"frame",add:"Tambah",clear:"Kosongkan",png:"Unduh PNG",plist:"Unduh plist",zip:"Unduh ZIP",anim:"Pratinjau Animasi",animS:"Ditempatkan oleh offset, dari jangkar tempat garis bersilang. Pratinjau saja — jangkar diatur dalam kode game Anda, bukan di plist.",
-a0:"bawah tengah",a1:"bawah kiri",a2:"tengah",a3:"atas kiri",onion:"Onion skin",o0:"Mati",o1:"Sebelumnya",o2:"Berikutnya",o3:"Keduanya",off:"offset plist",copy:n=>`Salin offset ini ke semua ${n} frame`,fr:(i,n,a,x,y)=>`Frame ${i} dari ${n} · dari ${a} {${x},${y}}`,name:"Nama atlas",pad:"Padding (px)",tag_unpack:"Bongkar atlas menjadi frame sprite satuan.",tag_repack:"Muat atlas dan plist-nya, lalu bungkus ulang menjadi atlas baru yang lebih rapat.",grp:"Animasi",fr_title:"Frame",search:"Cari frame…",sel_all:"Pilih semua",sel_none:"Batal pilih",del_sel:n=>`Hapus terpilih (${n})`,del_one:"Hapus frame ini",deleted:n=>`${n} frame dihapus`,undo:"Urungkan",none:"Tidak ada frame yang cocok.",picked:(n,m)=>`${n} dari ${m} dipilih`,zip_sel:n=>`Unduh ZIP (${n})`,nopick:"Pilih minimal satu frame.",needBoth:"Butuh PNG dan file .plist.",got:n=>`${n} sudah dipilih. Sekarang pilih file satunya.`,badPlist:"File .plist tidak bisa dibaca. Harus plist XML (bukan biner).",noFrames:"Tidak ada frame di file .plist ini.",empty:"Tidak ada file yang bisa dipakai."}};
+a0:"bawah tengah",a1:"bawah kiri",a2:"tengah",a3:"atas kiri",onion:"Onion skin",o0:"Mati",o1:"Sebelumnya",o2:"Berikutnya",o3:"Keduanya",off:"offset plist",feet1:"Kaki otomatis · frame ini",rn:"Ganti nama",rnN:n=>`Ganti nama (${n})`,rnT:"Nama frame",rnB:n=>`Ganti nama massal · ${n} frame`,rm_fr:"Cari & ganti",rm_ps:"Awalan / akhiran",rm_nu:"Nama + nomor",rfind:"Cari",rrepl:"Ganti dengan",rcase:"Peka huruf besar/kecil",rpre:"Awalan",rsuf:"Akhiran",rbase:"Nama dasar",rstart:"Mulai dari",rsep:"Pemisah",rzpad:"Nol di depan",rprev:"Pratinjau",rapply:"Terapkan",rcancel:"Batal",rdup:n=>`Nama sudah dipakai: ${n}`,rbad:"Nama tidak boleh kosong.",rdone:n=>`${n} frame diganti namanya`,rnochg:"Tidak ada nama yang berubah.",feetN:n=>`Kaki otomatis · semua ${n} frame`,feetDone:n=>`Kaki disejajarkan di ${n} frame`,copy:n=>`Salin offset ini ke semua ${n} frame`,fr:(i,n,a,x,y)=>`Frame ${i} dari ${n} · dari ${a} {${x},${y}}`,name:"Nama atlas",pad:"Padding (px)",tag_unpack:"Bongkar atlas menjadi frame sprite satuan.",tag_repack:"Muat atlas dan plist-nya, lalu bungkus ulang menjadi atlas baru yang lebih rapat.",grp:"Animasi",fr_title:"Frame",search:"Cari frame…",sel_all:"Pilih semua",sel_none:"Batal pilih",del_sel:n=>`Hapus terpilih (${n})`,del_one:"Hapus frame ini",deleted:n=>`${n} frame dihapus`,undo:"Urungkan",none:"Tidak ada frame yang cocok.",picked:(n,m)=>`${n} dari ${m} dipilih`,zip_sel:n=>`Unduh ZIP (${n})`,nopick:"Pilih minimal satu frame.",needBoth:"Butuh PNG dan file .plist.",got:n=>`${n} sudah dipilih. Sekarang pilih file satunya.`,badPlist:"File .plist tidak bisa dibaca. Harus plist XML (bukan biner).",noFrames:"Tidak ada frame di file .plist ini.",empty:"Tidak ada file yang bisa dipakai."}};
 const store=(k,v)=>{try{return v===undefined?localStorage.getItem(k):localStorage.setItem(k,v)}catch(e){}};
 let lang=store("zx-lang")||(/^id/i.test(navigator.language)?"id":"en");
 const t=k=>D[lang][k];
@@ -319,14 +337,14 @@ const idbDel=k=>idb("readwrite",s=>s.delete(k)).catch(()=>{});
 let pt=0;
 function persist(){clearTimeout(pt);pt=setTimeout(async()=>{
   const route=S.route,frames=S.frames;if(route==="unpack"||!frames.length)return;
-  try{const fr=[];for(const f of frames){const bl=await fpng(f);fr.push({name:f.name,blob:bl,sw:f.sw,sh:f.sh,tx:f.tx,ty:f.ty,w:f.w,h:f.h,dx:f.dx,dy:f.dy,ext:f.ext,em:f.empty?1:0})}
+  try{const fr=[];for(const f of frames){const bl=await fpng(f);fr.push({name:f.name,blob:bl,sw:f.sw,sh:f.sh,tx:f.tx,ty:f.ty,w:f.w,h:f.h,dx:f.dx,dy:f.dy,ext:f.ext,em:f.empty?1:0,lk:f.lock?1:0})}
     await idbSet(route,{fr,name:S.name,pad:S.pad,atlasName:S.atlasName})}catch(e){}
 },400)}
 async function restore(route){
   if(route==="unpack")return;
   const rec=await idbGet(route);if(!rec||!rec.fr||!rec.fr.length||S.route!==route||S.frames.length)return;
   try{const fr=[];for(const r of rec.fr){const bm=await createImageBitmap(r.blob),c=mk(r.w,r.h);c.getContext("2d").drawImage(bm,0,0);
-      fr.push({name:r.name,canvas:c,sw:r.sw,sh:r.sh,tx:r.tx,ty:r.ty,w:r.w,h:r.h,dx:r.dx||0,dy:r.dy||0,ext:r.ext,empty:!!r.em,_pp:Promise.resolve(r.blob)})}
+      fr.push({name:r.name,canvas:c,sw:r.sw,sh:r.sh,tx:r.tx,ty:r.ty,w:r.w,h:r.h,dx:r.dx||0,dy:r.dy||0,ext:r.ext,empty:!!r.em,lock:!!r.lk,_pp:Promise.resolve(r.blob)})}
     if(S.route!==route||S.frames.length)return;
     S.frames=fr;S.name=rec.name||"atlas";S.pad=rec.pad==null?1:rec.pad;S.atlasName=rec.atlasName||"atlas";sortF();S.idx=0;S.res=null;render();
   }catch(e){}
@@ -355,7 +373,7 @@ async function readZip(file){
 async function walk(en,out){if(en.isFile)await new Promise(r=>en.file(f=>{out.push(f);r()}));else if(en.isDirectory){const rd=en.createReader();let b;do{b=await new Promise(r=>rd.readEntries(r,()=>r([])));for(const e of b)await walk(e,out)}while(b.length)}}
 async function fromDrop(dt){const out=[];if(dt.items&&dt.items[0]&&dt.items[0].webkitGetAsEntry){for(const e of[...dt.items].map(i=>i.webkitGetAsEntry()).filter(Boolean))await walk(e,out)}else out.push(...dt.files);return out}
 const NC=(a,b)=>a.localeCompare(b,undefined,{numeric:true});
-function sortF(){
+function sortF(keep){
   const parse=n=>{const m=n.match(/^(.*?)([\s_.\-]*)(\d+)$/);return m?{base:m[1],sep:m[2],num:+m[3]}:{base:n,sep:"",num:null}};
   const G=new Map();
   S.frames.forEach(f=>{const p=parse(f.name);f.g=p.base;f.num=p.num;f.sep=p.sep;f.orig=f.name;if(!G.has(p.base))G.set(p.base,[]);G.get(p.base).push(f)});
@@ -364,7 +382,7 @@ function sortF(){
     const a=G.get(b);
     a.sort((x,y)=>(x.num===null)-(y.num===null)||(x.num-y.num)||NC(x.orig,y.orig));
     const sep=(a.find(f=>f.num!==null&&f.sep)||{sep:b&&a.some(f=>f.num!==null)?"":""}).sep;
-    if(S.route==="pack"){if(a.length===1&&a[0].num===null)a[0].name=b;
+    if(S.route==="pack"&&!keep&&!a.some(f=>f.lock)){if(a.length===1&&a[0].num===null)a[0].name=b;
     else a.forEach((f,i)=>{f.name=b+(b?sep:"")+(i+1)})}
     out.push(...a);
   });
@@ -395,7 +413,7 @@ async function intake(files){
 /* ---------- views ---------- */
 /* frame browser: click-to-name, search, delete */
 const vis=()=>{const q=S.q.trim().toLowerCase();return q?S.frames.filter(f=>f.name.toLowerCase().includes(q)):S.frames};
-function updSel(){const b=$("#ds");if(!b)return;b.textContent=t("del_sel")(S.sel.size);b.disabled=!S.sel.size}
+function updSel(){const b=$("#ds");if(!b)return;b.textContent=t("del_sel")(S.sel.size);b.disabled=!S.sel.size;const r=$("#rn");if(r){r.textContent=t("rnN")(S.sel.size);r.disabled=!S.sel.size}}
 function renderList(){
   const L=$("#flist");if(!L)return;const v=vis();L.textContent="";
   S.sel.forEach(f=>{if(!S.frames.includes(f))S.sel.delete(f)});
@@ -411,7 +429,8 @@ function renderList(){
     b.textContent=f.name+".png";b.title=f.name+".png";sm.textContent=f.w+" × "+f.h;nm.append(b,sm);
     const del=document.createElement("button");del.className="x";del.textContent="✕";del.title=t("del_one");
     del.onclick=e=>{e.stopPropagation();deleteFrames([f])};
-    r.onclick=()=>focusFrame(f,"list");r.append(ck,c,nm,del);L.append(r);
+    const ed=document.createElement("button");ed.className="ed";ed.textContent="✎";ed.title=t("rnT");ed.onclick=e=>{e.stopPropagation();renameOne(f)};nm.ondblclick=e=>{e.stopPropagation();renameOne(f)};
+    r.onclick=()=>focusFrame(f,"list");r.append(ck,c,nm,ed,del);L.append(r);
   });
 }
 function updateHL(){
@@ -462,14 +481,14 @@ function render(msg){
   if(S.route==="unpack"){
     if(!S.pick)S.pick=new Set(S.frames);
     v.innerHTML=`<div class="bar"><span class="mono" id="uc"></span><span class="sp"></span><button class="b g" id="clr">${t("clear")}</button><button class="b" id="zp"></button></div>
-    <div class="ftool"><input type="search" id="uq" placeholder="${t("search")}" value="${esc(S.q)}" autocomplete="off"><button class="b g" id="usa">${t("sel_all")}</button><button class="b g" id="usn">${t("sel_none")}</button></div><div class="list"></div>`;
+    <div class="ftool"><input type="search" id="uq" placeholder="${t("search")}" value="${esc(S.q)}" autocomplete="off"><button class="b g" id="usa">${t("sel_all")}</button><button class="b g" id="usn">${t("sel_none")}</button><button class="b g" id="urn"></button></div><div class="list"></div>`;
     const L=v.querySelector(".list"),cards=[],heads=[];
     const shown=()=>{const q=S.q.trim().toLowerCase();return q?S.frames.filter(f=>f.name.toLowerCase().includes(q)):S.frames};
     const upd=()=>{
       cards.forEach(c=>{const on=S.pick.has(c.f);c.d.classList.toggle("on",on);c.ck.checked=on});
       heads.forEach(h=>{const k=h.m.filter(f=>S.pick.has(f)).length;h.ck.checked=k===h.m.length;h.ck.indeterminate=k>0&&k<h.m.length});
       $("#uc").textContent=t("picked")(S.pick.size,S.frames.length);
-      const zp=$("#zp");zp.textContent=t("zip_sel")(S.pick.size);zp.disabled=!S.pick.size;
+      const zp=$("#zp");zp.textContent=t("zip_sel")(S.pick.size);zp.disabled=!S.pick.size;const ur=$("#urn");ur.textContent=t("rnN")(S.pick.size);ur.disabled=!S.pick.size;
     };
     const draw=()=>{
       L.textContent="";cards.length=0;heads.length=0;const vs=shown();
@@ -481,13 +500,14 @@ function render(msg){
         const d=document.createElement("div"),ck=document.createElement("input");d.className="pk";ck.type="checkbox";
         ck.onclick=e=>{e.stopPropagation();ck.checked?S.pick.add(f):S.pick.delete(f);upd()};
         d.onclick=()=>{S.pick.has(f)?S.pick.delete(f):S.pick.add(f);upd()};
-        d.append(ck,f.canvas,f.name);L.append(d);cards.push({f,d,ck});
+        const ed=document.createElement("button");ed.className="ed";ed.textContent="✎";ed.title=t("rnT");ed.onclick=e=>{e.stopPropagation();renameOne(f)};
+        d.append(ck,f.canvas,f.name,ed);L.append(d);cards.push({f,d,ck});
       });
       upd();
     };
     $("#uq").oninput=e=>{S.q=e.target.value;draw()};
     $("#usa").onclick=()=>{shown().forEach(f=>S.pick.add(f));upd()};
-    $("#usn").onclick=()=>{shown().forEach(f=>S.pick.delete(f));upd()};
+    $("#usn").onclick=()=>{shown().forEach(f=>S.pick.delete(f));upd()};$("#urn").onclick=()=>batchDlg(selList());
     $("#clr").onclick=()=>{S.frames=[];S.pick=null;S.q="";render()};
     $("#zp").onclick=()=>busy($("#zp"),async set=>{
       const fr=S.frames.filter(f=>S.pick.has(f)),n=fr.length;if(!n){toast(t("nopick"));return}
@@ -505,7 +525,7 @@ function render(msg){
   <div class="atl chk" id="atl"></div>
   <div class="card fcard"><div class="fh"><h2>${t("fr_title")}<span class="mono cnt" id="fcnt"></span></h2></div>
     <div class="ftool"><input type="search" id="q" placeholder="${t("search")}" value="${esc(S.q)}" autocomplete="off">
-      <button class="b g" id="sa">${t("sel_all")}</button><button class="b g" id="sn">${t("sel_none")}</button><button class="b dng" id="ds"></button></div>
+      <button class="b g" id="sa">${t("sel_all")}</button><button class="b g" id="sn">${t("sel_none")}</button><button class="b g" id="rn"></button><button class="b dng" id="ds"></button></div>
     <div class="flist" id="flist"></div></div>
   <div class="card"><h2>${t("anim")}</h2><p class="mut">${t("animS")}</p>
     <div class="stage chk"><canvas id="ac"></canvas><div class="zm"><button id="zo">−</button><span class="mono" id="zl"></span><button id="zi">+</button><button id="zr">↻</button></div></div>
@@ -515,6 +535,7 @@ function render(msg){
     <div>${t("off")}</div>
     ${["x","y"].map(a=>`<div class="off"><span>${a}</span><button data-s="${a}-">−</button><input type="range" min="-100" max="100" step="0.5" id="r${a}"><button data-s="${a}+">+</button><input class="n mono" type="number" step="0.5" id="n${a}"></div>`).join("")}
     <button class="cp" id="cp">${t("copy")(GF().length)}</button>
+    <button class="cp" id="f1" style="margin-top:-8px">${t("feet1")}</button><button class="cp" id="fN" style="margin-top:-8px">${t("feetN")(GF().length)}</button>
     <div class="pb"><button id="pv">⏮</button><button id="pp"></button><button id="pn">⏭</button>
       <div class="inf"><b id="fn"></b><span id="fi2"></span></div>
       <div class="sw">⏩<input type="range" min="1" max="30" id="fp"><span class="mono" id="fl" style="width:48px"></span></div></div>
@@ -528,7 +549,7 @@ function render(msg){
   $("#q").oninput=e=>{S.q=e.target.value;renderList()};
   $("#sa").onclick=()=>{vis().forEach(f=>S.sel.add(f));renderList()};
   $("#sn").onclick=()=>{S.sel.clear();renderList()};
-  $("#ds").onclick=()=>deleteFrames([...S.sel]);
+  $("#ds").onclick=()=>deleteFrames([...S.sel]);$("#rn").onclick=()=>batchDlg(selList());
   $("#fi").onchange=e=>intake([...e.target.files]);if($("#fz"))$("#fz").onchange=e=>intake([...e.target.files]);
   $("#clr").onclick=()=>{clearTimeout(pt);idbDel(S.route);S.frames=[];S.res=null;render()};
   $("#dp").onclick=()=>busy($("#dp"),async set=>{set("…");dl(await atlasBlob(),(S.name||"atlas")+".png")});
@@ -544,6 +565,10 @@ function render(msg){
   ["x","y"].forEach(a=>{$("#r"+a).oninput=e=>setO(a,e.target.value);$("#n"+a).oninput=e=>setO(a,e.target.value)});
   v.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{const a=b.dataset.s[0],f=GF()[S.idx];setO(a,f["d"+a]+(b.dataset.s[1]==="+"?.5:-.5))});
   $("#cp").onclick=()=>{const c=GF()[S.idx];GF().forEach(f=>{const lx=offLim(f,"x"),ly=offLim(f,"y");f.dx=Math.max(-lx,Math.min(lx,c.dx));f.dy=Math.max(-ly,Math.min(ly,c.dy))});persist()};
+  const feetFix=f=>{const q=feetOf(f);if(!q)return false;const B=[[f.sw/2,f.sh],[0,f.sh],[f.sw/2,f.sh/2],[0,0]][S.anchor],lx=offLim(f,"x"),ly=offLim(f,"y"),r5=n=>Math.round(n*2)/2;
+    f.dx=Math.max(-lx,Math.min(lx,r5(B[0]-f.tx-q[0])));f.dy=Math.max(-ly,Math.min(ly,r5(f.ty-B[1]+q[1])));return true};
+  $("#f1").onclick=()=>{if(feetFix(GF()[S.idx])){sync();persist();toast(t("feetDone")(1))}};
+  $("#fN").onclick=()=>{let n=0;GF().forEach(f=>{if(feetFix(f))n++});sync();persist();toast(t("feetDone")(n))};
   const go=d=>{const m=GF().length;S.idx=(S.idx+d+m)%m;sync()};
   $("#pv").onclick=()=>{S.play=false;go(-1)};$("#pn").onclick=()=>{S.play=false;go(1)};
   $("#pp").onclick=()=>{S.play=!S.play;loop();sync()};
@@ -552,6 +577,79 @@ function render(msg){
 }
 /* offset limit = frame sourceSize (x -> width, y -> height); never below an already-stored value */
 function offLim(f,a){const base=a==="x"?f.sw:f.sh;return Math.max(base||0,Math.ceil(Math.abs(f["d"+a]||0)),1)}
+/* feet = lowest visible pixels of the trimmed sprite: y = bottom edge, x = mean x of the bottom band (canvas coords) */
+function feetOf(f){
+  if(f.empty||!f.canvas||!f.w||!f.h)return null;
+  if(f._ft)return f._ft;
+  const w=f.w,h=f.h,d=f.canvas.getContext("2d",{willReadFrequently:true}).getImageData(0,0,w,h).data,T=40;
+  let yb=-1;for(let y=h-1;y>=0&&yb<0;y--)for(let x=0;x<w;x++)if(d[(y*w+x)*4+3]>=T){yb=y;break}
+  if(yb<0)return null;
+  const band=Math.max(1,Math.round(h*.04));let sx=0,n=0;
+  for(let y=Math.max(0,yb-band+1);y<=yb;y++)for(let x=0;x<w;x++)if(d[(y*w+x)*4+3]>=T){sx+=x+.5;n++}
+  return f._ft=[sx/n,yb+1];
+}
+/* ---------- rename (single + batch) ---------- */
+const cleanName=n=>String(n).replace(/\.(png|jpe?g|webp)$/i,"").replace(/[\\\/:*?"<>|\u0000-\u001f]/g,"").trim();
+const selList=()=>S.route==="unpack"?S.frames.filter(f=>S.pick&&S.pick.has(f)):S.frames.filter(f=>S.sel.has(f));
+function applyNames(pairs){
+  const mp=new Map(pairs.map(([f,n])=>[f,cleanName(n)])),ch=[...mp].filter(([f,n])=>n!==f.name);
+  if(!ch.length){toast(t("rnochg"));return true}
+  if(ch.some(([f,n])=>!n))return t("rbad");
+  const seen=new Map();
+  for(const f of S.frames){const n=mp.has(f)?mp.get(f):f.name,k=n.toLowerCase();
+    if(seen.has(k)&&(mp.has(f)||mp.has(seen.get(k))))return t("rdup")(n);seen.set(k,f)}
+  const cur=GF()[S.idx],og=new Set(ch.map(([f])=>f.g)),aff=S.frames.filter(f=>og.has(f.g)||ch.some(([x])=>x===f)),
+    snap=aff.map(f=>[f,f.name,f.lock]);
+  ch.forEach(([f,n])=>{f.name=n});aff.forEach(f=>{f.lock=true});
+  sortF(true);S.res=null;
+  if(cur){S.group=cur.g;S.idx=Math.max(0,GF().indexOf(cur))}
+  render();persist();
+  toast(t("rdone")(ch.length),()=>{snap.forEach(([f,n,l])=>{f.name=n;f.lock=l});sortF(true);S.res=null;S.idx=0;render();persist()});
+  return true;
+}
+function dlg(title,body,onOk){
+  const ov=document.createElement("div");ov.className="ov";const bx=document.createElement("div");bx.className="dlg";
+  const h=document.createElement("h3");h.textContent=title;const act=document.createElement("div");act.className="act";
+  const mkb=(txt,cls)=>{const b=document.createElement("button");b.className=cls;b.textContent=txt;return b};
+  const c=mkb(t("rcancel"),"b g"),ok=mkb(t("rapply"),"b"),er=document.createElement("div");er.className="err";er.hidden=true;act.append(c,ok);bx.append(h,body,er,act);ov.append(bx);document.body.append(ov);
+  const close=()=>ov.remove();
+  c.onclick=close;ov.onmousedown=e=>{if(e.target===ov)close()};
+  ov.onkeydown=e=>{if(e.key==="Escape")close();else if(e.key==="Enter"&&e.target.tagName==="INPUT"){e.preventDefault();ok.click()}};
+  ok.onclick=()=>{const r=onOk();if(typeof r==="string"){er.textContent=r;er.hidden=false;return}close()};
+  bx.addEventListener("input",()=>{er.hidden=true});
+  return ov;
+}
+function fld(label,input){const l=document.createElement("label");l.textContent=label;const d=document.createElement("div");d.append(l,input);return d}
+function inp(type,val){const i=document.createElement("input");i.type=type;i.value=val;i.autocomplete="off";i.spellcheck=false;return i}
+function renameOne(f){
+  const body=document.createElement("div"),i=inp("text",f.name);body.append(fld(t("rnT"),i));
+  const ov=dlg(t("rnT"),body,()=>applyNames([[f,i.value]]));
+  setTimeout(()=>{i.focus();i.select()},30);return ov;
+}
+function batchDlg(list){
+  if(!list.length){toast(t("nopick"));return}
+  const body=document.createElement("div"),md=document.createElement("select");
+  ["rm_fr","rm_ps","rm_nu"].forEach((k,i)=>{const o=document.createElement("option");o.value=i;o.textContent=t(k);md.append(o)});
+  const find=inp("text",""),repl=inp("text",""),cs=inp("checkbox",""),pre=inp("text",""),suf=inp("text",""),
+    base=inp("text",list[0].g||list[0].name),start=inp("number","1"),sep=inp("text",list[0].sep||"_"),zp=inp("number","0");
+  start.min=0;zp.min=0;zp.max=8;
+  const cb=document.createElement("label");cb.className="cb";cb.append(cs,document.createTextNode(t("rcase")));
+  const g=[[fld(t("rfind"),find),fld(t("rrepl"),repl),cb],[fld(t("rpre"),pre),fld(t("rsuf"),suf)],
+    [fld(t("rbase"),base),(()=>{const r=document.createElement("div");r.className="row2";r.append(fld(t("rstart"),start),fld(t("rsep"),sep),fld(t("rzpad"),zp));return r})()]]
+    .map(a=>{const d=document.createElement("div");d.append(...a);return d});
+  const pv=document.createElement("div");pv.className="pv";
+  body.append(fld(" ",md),...g,pv);body.firstChild.firstChild.remove();
+  const calc=()=>{const m=+md.value;return list.map((f,i)=>{
+    if(m===0){if(!find.value)return f.name;return cs.checked?f.name.split(find.value).join(repl.value):f.name.replace(new RegExp(find.value.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),"gi"),()=>repl.value)}
+    if(m===1)return pre.value+f.name+suf.value;
+    const n=String((+start.value||0)+i).padStart(Math.max(0,Math.min(8,+zp.value||0)),"0");return (base.value||f.name)+(base.value?sep.value:"")+n});};
+  const upd=()=>{g.forEach((d,i)=>d.hidden=i!==+md.value);const nn=calc();pv.textContent="";
+    const hd=document.createElement("div");hd.textContent=t("rprev")+" · "+list.length;pv.append(hd);
+    list.slice(0,6).forEach((f,i)=>{const d=document.createElement("div");d.append(f.name+" → ");const b=document.createElement("b");b.textContent=cleanName(nn[i])||"∅";d.append(b);pv.append(d)});
+    if(list.length>6){const d=document.createElement("div");d.textContent="…";pv.append(d)}};
+  body.oninput=body.onchange=upd;upd();
+  return dlg(t("rnB")(list.length),body,()=>applyNames(list.map((f,i)=>[f,calc()[i]])));
+}
 function loop(){clearInterval(S.timer);const n=GF().length;if(S.play&&n>1)S.timer=setInterval(()=>{S.idx=(S.idx+1)%n;sync()},1000/S.fps)}
 function sync(){
   const L=GF(),n=L.length;if(S.idx>=n)S.idx=0;const f=L[S.idx];if(!f||!$("#ac"))return;
