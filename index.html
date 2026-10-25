@@ -129,6 +129,11 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;bac
 .list div:hover{transform:translateY(-2px);border-color:var(--ac);box-shadow:var(--sh)}
 .gh{grid-column:1/-1;margin:10px 0 0;font:600 13px "IBM Plex Mono",ui-monospace,monospace;color:var(--fg);display:flex;align-items:center;gap:8px}
 .gh::before{content:"";width:4px;height:14px;border-radius:2px;background:linear-gradient(var(--ac),var(--ac2))}
+.list div.pk{position:relative;cursor:pointer;opacity:.5}
+.list div.pk.on{opacity:1;border-color:var(--ac)}
+.list div.pk input{position:absolute;top:10px;left:10px;z-index:1;accent-color:var(--ac);width:17px;height:17px;cursor:pointer;margin:0;filter:drop-shadow(0 0 2px var(--card))}
+.gh input{accent-color:var(--ac);width:16px;height:16px;cursor:pointer;margin:0}
+.list div.empty{grid-column:1/-1;text-align:center;border:0;background:none;padding:22px;font-size:13px}
 .list canvas{width:100%;height:68px;object-fit:contain;display:block;margin-bottom:6px;border-radius:6px;background:repeating-conic-gradient(rgba(120,128,150,.14) 0 25%,transparent 0 50%) 0/10px 10px}
 
 .rel{position:relative;display:inline-block;max-width:100%;vertical-align:top;line-height:0}
@@ -194,11 +199,11 @@ footer{border-top:1px solid var(--bd);padding:16px 24px;font-size:11px;color:var
 const D={en:{pack:"Pack",unpack:"Unpack",repack:"Repack",tag:"Sprite folders in, cocos2d-x atlas and plist out.",runs:"runs in your browser · nothing uploaded",foot:"format 2 plist · trimmed · no rotation · tight non-power-of-two atlas",
 h_pack:"Choose your sprite frames",rotFixed:n=>`${n} rotated frame${n>1?"s":""} straightened. The new plist has rotated = false for every frame.`,rotIgn:n=>`Rotated flag ignored for ${n} frame${n>1?"s":""}; all frames treated as straight.`,ign:"Ignore the rotated flag (treat every frame as already straight)",s_pack:"Every image you choose, or every image inside a ZIP, becomes one frame.",b_zip:"Choose ZIP",add_zip:"Add ZIP",badZip:"Could not read this ZIP file.",noImgZip:"No images found in this ZIP.",b_pack:"Choose images",h_un:"Choose an atlas and its plist",s_un:"Pick one atlas PNG and its .plist file.",b_un:"Choose files",
 frames:"frames",add:"Add",clear:"Clear",png:"Download PNG",plist:"Download plist",zip:"Download ZIP",anim:"Animation preview",animS:"Placed by offset, from the anchor where the lines cross. Preview only — the anchor is set in your game code, not in the plist.",
-a0:"bottom center",a1:"bottom left",a2:"center",a3:"top left",onion:"Onion skin",o0:"Off",o1:"Previous",o2:"Next",o3:"Both",off:"plist offset",copy:n=>`Copy this offset to all ${n} frames`,fr:(i,n,a,x,y)=>`Frame ${i} of ${n} · from ${a} {${x},${y}}`,name:"Atlas name",pad:"Padding (px)",tag_unpack:"Break an atlas back into individual sprite frames.",tag_repack:"Load an atlas and its plist, then repack it into a new, tighter atlas.",grp:"Animation",fr_title:"Frames",search:"Search frames…",sel_all:"Select all",sel_none:"Deselect",del_sel:n=>`Delete selected (${n})`,del_one:"Delete this frame",deleted:n=>`Deleted ${n} frame${n>1?"s":""}`,undo:"Undo",none:"No frames match.",needBoth:"Need both a PNG and a .plist.",got:n=>`Got ${n}. Now choose the other file.`,badPlist:"Could not read this .plist. It must be an XML plist (not binary).",noFrames:"No frames found in this .plist.",empty:"No usable files found."},
+a0:"bottom center",a1:"bottom left",a2:"center",a3:"top left",onion:"Onion skin",o0:"Off",o1:"Previous",o2:"Next",o3:"Both",off:"plist offset",copy:n=>`Copy this offset to all ${n} frames`,fr:(i,n,a,x,y)=>`Frame ${i} of ${n} · from ${a} {${x},${y}}`,name:"Atlas name",pad:"Padding (px)",tag_unpack:"Break an atlas back into individual sprite frames.",tag_repack:"Load an atlas and its plist, then repack it into a new, tighter atlas.",grp:"Animation",fr_title:"Frames",search:"Search frames…",sel_all:"Select all",sel_none:"Deselect",del_sel:n=>`Delete selected (${n})`,del_one:"Delete this frame",deleted:n=>`Deleted ${n} frame${n>1?"s":""}`,undo:"Undo",none:"No frames match.",picked:(n,m)=>`${n} of ${m} selected`,zip_sel:n=>`Download ZIP (${n})`,nopick:"Select at least one frame.",needBoth:"Need both a PNG and a .plist.",got:n=>`Got ${n}. Now choose the other file.`,badPlist:"Could not read this .plist. It must be an XML plist (not binary).",noFrames:"No frames found in this .plist.",empty:"No usable files found."},
 id:{pack:"Bungkus",unpack:"Bongkar",repack:"Bungkus Ulang",tag:"Folder sprite masuk, atlas cocos2d-x dan plist keluar.",runs:"berjalan di browser Anda · tidak ada yang diunggah",foot:"format 2 plist · dipangkas · tanpa rotasi · atlas non-power-of-two yang rapat",
 h_pack:"Pilih frame sprite Anda",rotFixed:n=>`${n} frame rotated diluruskan. Plist baru berisi rotated = false untuk semua frame.`,rotIgn:n=>`Flag rotated diabaikan untuk ${n} frame; semua frame dianggap sudah lurus.`,ign:"Abaikan flag rotated (anggap semua frame sudah lurus)",s_pack:"Setiap gambar yang Anda pilih, atau yang ada di dalam ZIP, menjadi satu frame.",b_zip:"Pilih ZIP",add_zip:"Tambah ZIP",badZip:"File ZIP tidak bisa dibaca.",noImgZip:"Tidak ada gambar di dalam ZIP ini.",b_pack:"Pilih gambar",h_un:"Pilih atlas dan plist-nya",s_un:"Pilih satu PNG atlas dan file .plist-nya.",b_un:"Pilih file",
 frames:"frame",add:"Tambah",clear:"Kosongkan",png:"Unduh PNG",plist:"Unduh plist",zip:"Unduh ZIP",anim:"Pratinjau Animasi",animS:"Ditempatkan oleh offset, dari jangkar tempat garis bersilang. Pratinjau saja — jangkar diatur dalam kode game Anda, bukan di plist.",
-a0:"bawah tengah",a1:"bawah kiri",a2:"tengah",a3:"atas kiri",onion:"Onion skin",o0:"Mati",o1:"Sebelumnya",o2:"Berikutnya",o3:"Keduanya",off:"offset plist",copy:n=>`Salin offset ini ke semua ${n} frame`,fr:(i,n,a,x,y)=>`Frame ${i} dari ${n} · dari ${a} {${x},${y}}`,name:"Nama atlas",pad:"Padding (px)",tag_unpack:"Bongkar atlas menjadi frame sprite satuan.",tag_repack:"Muat atlas dan plist-nya, lalu bungkus ulang menjadi atlas baru yang lebih rapat.",grp:"Animasi",fr_title:"Frame",search:"Cari frame…",sel_all:"Pilih semua",sel_none:"Batal pilih",del_sel:n=>`Hapus terpilih (${n})`,del_one:"Hapus frame ini",deleted:n=>`${n} frame dihapus`,undo:"Urungkan",none:"Tidak ada frame yang cocok.",needBoth:"Butuh PNG dan file .plist.",got:n=>`${n} sudah dipilih. Sekarang pilih file satunya.`,badPlist:"File .plist tidak bisa dibaca. Harus plist XML (bukan biner).",noFrames:"Tidak ada frame di file .plist ini.",empty:"Tidak ada file yang bisa dipakai."}};
+a0:"bawah tengah",a1:"bawah kiri",a2:"tengah",a3:"atas kiri",onion:"Onion skin",o0:"Mati",o1:"Sebelumnya",o2:"Berikutnya",o3:"Keduanya",off:"offset plist",copy:n=>`Salin offset ini ke semua ${n} frame`,fr:(i,n,a,x,y)=>`Frame ${i} dari ${n} · dari ${a} {${x},${y}}`,name:"Nama atlas",pad:"Padding (px)",tag_unpack:"Bongkar atlas menjadi frame sprite satuan.",tag_repack:"Muat atlas dan plist-nya, lalu bungkus ulang menjadi atlas baru yang lebih rapat.",grp:"Animasi",fr_title:"Frame",search:"Cari frame…",sel_all:"Pilih semua",sel_none:"Batal pilih",del_sel:n=>`Hapus terpilih (${n})`,del_one:"Hapus frame ini",deleted:n=>`${n} frame dihapus`,undo:"Urungkan",none:"Tidak ada frame yang cocok.",picked:(n,m)=>`${n} dari ${m} dipilih`,zip_sel:n=>`Unduh ZIP (${n})`,nopick:"Pilih minimal satu frame.",needBoth:"Butuh PNG dan file .plist.",got:n=>`${n} sudah dipilih. Sekarang pilih file satunya.`,badPlist:"File .plist tidak bisa dibaca. Harus plist XML (bukan biner).",noFrames:"Tidak ada frame di file .plist ini.",empty:"Tidak ada file yang bisa dipakai."}};
 const store=(k,v)=>{try{return v===undefined?localStorage.getItem(k):localStorage.setItem(k,v)}catch(e){}};
 let lang=store("zx-lang")||(/^id/i.test(navigator.language)?"id":"en");
 const t=k=>D[lang][k];
@@ -385,7 +390,7 @@ async function intake(files){
     }
   }catch(e){msg=String(e.message||e)}
   const rn=S.rotN||0;S.rotN=0;
-  sortF();S.idx=0;S.res=null;render(msg);if(rn)toast(t(S.ignoreRot?"rotIgn":"rotFixed")(rn));
+  S.pick=null;sortF();S.idx=0;S.res=null;render(msg);if(rn)toast(t(S.ignoreRot?"rotIgn":"rotFixed")(rn));
 }
 /* ---------- views ---------- */
 /* frame browser: click-to-name, search, delete */
@@ -455,13 +460,41 @@ function render(msg){
     $("#fi").onchange=e=>intake([...e.target.files]);if($("#fz"))$("#fz").onchange=e=>intake([...e.target.files]);if($("#ir"))$("#ir").onchange=e=>{S.ignoreRot=e.target.checked};return;
   }
   if(S.route==="unpack"){
-    v.innerHTML=`<div class="bar"><span class="mono">${n} ${t("frames")}</span><span class="sp"></span><button class="b g" id="clr">${t("clear")}</button><button class="b" id="zp">${t("zip")}</button></div><div class="list"></div>`;
-    let lg;S.frames.forEach(f=>{const L=v.querySelector(".list");if(f.g!==lg){lg=f.g;const h=document.createElement("h3");h.className="gh";h.textContent=(f.g||"—")+" · "+S.frames.filter(x=>x.g===f.g).length;L.append(h)}const d=document.createElement("div"),c=mk(f.canvas.width,f.canvas.height);c.getContext("2d").drawImage(f.canvas,0,0);d.append(c,f.name);v.querySelector(".list").append(d)});
-    $("#clr").onclick=()=>{S.frames=[];render()};
-    $("#zp").onclick=()=>busy($("#zp"),async set=>{const fr=S.frames,n=fr.length,out=new Array(n);let k=0,done=0;
+    if(!S.pick)S.pick=new Set(S.frames);
+    v.innerHTML=`<div class="bar"><span class="mono" id="uc"></span><span class="sp"></span><button class="b g" id="clr">${t("clear")}</button><button class="b" id="zp"></button></div>
+    <div class="ftool"><input type="search" id="uq" placeholder="${t("search")}" value="${esc(S.q)}" autocomplete="off"><button class="b g" id="usa">${t("sel_all")}</button><button class="b g" id="usn">${t("sel_none")}</button></div><div class="list"></div>`;
+    const L=v.querySelector(".list"),cards=[],heads=[];
+    const shown=()=>{const q=S.q.trim().toLowerCase();return q?S.frames.filter(f=>f.name.toLowerCase().includes(q)):S.frames};
+    const upd=()=>{
+      cards.forEach(c=>{const on=S.pick.has(c.f);c.d.classList.toggle("on",on);c.ck.checked=on});
+      heads.forEach(h=>{const k=h.m.filter(f=>S.pick.has(f)).length;h.ck.checked=k===h.m.length;h.ck.indeterminate=k>0&&k<h.m.length});
+      $("#uc").textContent=t("picked")(S.pick.size,S.frames.length);
+      const zp=$("#zp");zp.textContent=t("zip_sel")(S.pick.size);zp.disabled=!S.pick.size;
+    };
+    const draw=()=>{
+      L.textContent="";cards.length=0;heads.length=0;const vs=shown();
+      if(!vs.length){const d=document.createElement("div");d.className="empty";d.textContent=t("none");L.append(d);upd();return}
+      let lg;vs.forEach(f=>{
+        if(f.g!==lg){lg=f.g;const m=vs.filter(x=>x.g===f.g),h=document.createElement("h3"),ck=document.createElement("input");h.className="gh";ck.type="checkbox";
+          ck.onclick=()=>{const all=m.every(x=>S.pick.has(x));m.forEach(x=>all?S.pick.delete(x):S.pick.add(x));upd()};
+          h.append(ck,(f.g||"—")+" · "+m.length);L.append(h);heads.push({ck,m})}
+        const d=document.createElement("div"),ck=document.createElement("input");d.className="pk";ck.type="checkbox";
+        ck.onclick=e=>{e.stopPropagation();ck.checked?S.pick.add(f):S.pick.delete(f);upd()};
+        d.onclick=()=>{S.pick.has(f)?S.pick.delete(f):S.pick.add(f);upd()};
+        d.append(ck,f.canvas,f.name);L.append(d);cards.push({f,d,ck});
+      });
+      upd();
+    };
+    $("#uq").oninput=e=>{S.q=e.target.value;draw()};
+    $("#usa").onclick=()=>{shown().forEach(f=>S.pick.add(f));upd()};
+    $("#usn").onclick=()=>{shown().forEach(f=>S.pick.delete(f));upd()};
+    $("#clr").onclick=()=>{S.frames=[];S.pick=null;S.q="";render()};
+    $("#zp").onclick=()=>busy($("#zp"),async set=>{
+      const fr=S.frames.filter(f=>S.pick.has(f)),n=fr.length;if(!n){toast(t("nopick"));return}
+      const out=new Array(n);let k=0,done=0;
       await Promise.all(Array.from({length:16},async()=>{while(k<n){const i=k++;out[i]={name:fr[i].name+".png",data:new Uint8Array(await(await fpng(fr[i])).arrayBuffer())};set(++done+" / "+n)}}));
       dl(zip(out),S.atlasName+"_frames.zip")});
-    prewarm(S.frames).catch(()=>{});
+    prewarm(S.frames).catch(()=>{});draw();
     return;
   }
   if(!S.res)S.res=pack(S.frames,S.pad);
@@ -534,7 +567,7 @@ function sync(){
   if(S.onion&1&&n>1)put(L[(S.idx-1+n)%n],.3);if(S.onion&2&&n>1)put(L[(S.idx+1)%n],.3);
   put(f,1);x.globalAlpha=1;
 }
-function setRoute(r){if(!TABS.includes(r))r="pack";if(r!==S.route){hideToast();S.q="";S.sel=new Set();S.focus=null;S.pPng=S.pPl=null;S.route=r;S.frames=[];S.res=null;S.idx=0}render();restore(S.route)}
+function setRoute(r){if(!TABS.includes(r))r="pack";if(r!==S.route){hideToast();S.q="";S.sel=new Set();S.focus=null;S.pPng=S.pPl=null;S.route=r;S.frames=[];S.res=null;S.idx=0;S.pick=null}render();restore(S.route)}
 function route_(){setRoute(location.hash.slice(1))}
 document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("nav a, a.logo");if(!a)return;e.preventDefault();
   const r=a.getAttribute("href").slice(1);try{history.replaceState(null,"","#"+r)}catch(_){}setRoute(r)});
