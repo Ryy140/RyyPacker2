@@ -211,15 +211,16 @@ $("#lang").onclick=()=>{lang=lang==="en"?"id":"en";store("zx-lang",lang);render(
 
 const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const strip=n=>n.replace(/\.[^.]+$/,"");
-const mk=(w,h)=>{const c=document.createElement("canvas");c.width=w;c.height=h;return c};
-const toBlob=c=>new Promise(r=>c.toBlob(r,"image/png"));
-const fpng=f=>f._pp||(f._pp=toBlob(f.canvas));
-const atlasBlob=()=>{const r=S.res;return r.bp||(r.bp=toBlob(r.atlas))};
+const IMGX=/\.(png|jpe?g|webp)$/i,stripImg=n=>n.replace(IMGX,""),extOf=n=>(n.match(IMGX)||[""])[0];
+const mk=(w,h)=>{const c=document.createElement("canvas");c.width=Math.max(1,Math.round(w)||1);c.height=Math.max(1,Math.round(h)||1);return c};
+const toBlob=c=>new Promise((r,j)=>c.toBlob(b=>b?r(b):j(new Error("Failed to encode PNG")),"image/png"));
+const fpng=f=>f._pp||(f._pp=toBlob(f.canvas).catch(e=>{f._pp=null;throw e}));
+const atlasBlob=()=>{const r=S.res;return r.bp||(r.bp=toBlob(r.atlas).catch(e=>{r.bp=null;throw e}))};
 async function busy(btn,fn){const o=btn.textContent;btn.disabled=true;btn.classList.add("busy");
-  try{await fn(x=>{btn.textContent=x})}finally{btn.disabled=false;btn.classList.remove("busy");btn.textContent=o}}
+  try{await fn(x=>{btn.textContent=x})}catch(e){console.error(e);toast(String((e&&e.message)||e))}finally{btn.disabled=false;btn.classList.remove("busy");btn.textContent=o}}
 async function prewarm(frames){for(let i=0;i<frames.length;i+=16){if(S.frames!==frames)return;await Promise.all(frames.slice(i,i+16).map(fpng));await new Promise(r=>setTimeout(r))}}
 const fmt=n=>String(Math.round(n*10)/10);
-function dl(b,n){const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+function dl(b,n){const u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=n;a.rel="noopener";a.style.display="none";document.body.appendChild(a);a.click();setTimeout(()=>{a.remove();URL.revokeObjectURL(u)},60000)}
 
 /* trim */
 function trim(name,src){
@@ -245,26 +246,45 @@ function pack(frames,p){
 }
 function plist(name){
   const r=S.res;let b="";
-  for(const f of S.frames){const[x,y]=r.rects.get(f),ox=f.tx+f.w/2-f.sw/2+f.dx,oy=f.sh/2-(f.ty+f.h/2)+f.dy;
-    b+=`\t\t<key>${esc(f.name)}.png</key>\n\t\t<dict>\n\t\t\t<key>frame</key>\n\t\t\t<string>{{${x},${y}},{${f.w},${f.h}}}</string>\n\t\t\t<key>offset</key>\n\t\t\t<string>{${ox},${oy}}</string>\n\t\t\t<key>rotated</key>\n\t\t\t<false/>\n\t\t\t<key>sourceColorRect</key>\n\t\t\t<string>{{${f.tx},${f.ty}},{${f.w},${f.h}}}</string>\n\t\t\t<key>sourceSize</key>\n\t\t\t<string>{${f.sw},${f.sh}}</string>\n\t\t</dict>\n`}
+  for(const f of S.frames){const E=!!f.empty,[x0,y0]=r.rects.get(f),x=E?0:x0,y=E?0:y0,fw=E?0:f.w,fh=E?0:f.h,ftx=E?0:f.tx,fty=E?0:f.ty,fsw=E?0:f.sw,fsh=E?0:f.sh,ox=E?0:f.tx+f.w/2-f.sw/2+f.dx,oy=E?0:f.sh/2-(f.ty+f.h/2)+f.dy;
+    b+=`\t\t<key>${esc(f.name)}${f.ext===undefined?".png":esc(f.ext)}</key>\n\t\t<dict>\n\t\t\t<key>frame</key>\n\t\t\t<string>{{${x},${y}},{${fw},${fh}}}</string>\n\t\t\t<key>offset</key>\n\t\t\t<string>{${ox},${oy}}</string>\n\t\t\t<key>rotated</key>\n\t\t\t<false/>\n\t\t\t<key>sourceColorRect</key>\n\t\t\t<string>{{${ftx},${fty}},{${fw},${fh}}}</string>\n\t\t\t<key>sourceSize</key>\n\t\t\t<string>{${fsw},${fsh}}</string>\n\t\t</dict>\n`}
   return `<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n\t<dict>\n\t<key>frames</key>\n\t<dict>\n${b}\t</dict>\n\t<key>metadata</key>\n\t<dict>\n\t\t<key>format</key>\n\t\t<integer>2</integer>\n\t\t<key>pixelFormat</key>\n\t\t<string>RGBA8888</string>\n\t\t<key>premultiplyAlpha</key>\n\t\t<false/>\n\t\t<key>realTextureFileName</key>\n\t\t<string>${esc(name)}.png</string>\n\t\t<key>size</key>\n\t\t<string>{${r.w},${r.h}}</string>\n\t\t<key>smartupdate</key>\n\t\t<string>$PrinceRyy$</string>\n\t\t<key>textureFileName</key>\n\t\t<string>${esc(name)}.png</string>\n\t</dict>\n\t</dict>\n</plist>\n`;
 }
 /* plist parse / unpack */
 function pv(n){switch(n.tagName){case"dict":{const o={},k=[...n.children];for(let i=0;i<k.length;i+=2)o[k[i].textContent]=pv(k[i+1]);return o}case"array":return[...n.children].map(pv);case"true":return true;case"false":return false;case"integer":return parseInt(n.textContent);case"real":return parseFloat(n.textContent);default:return n.textContent}}
 const nums=s=>(String(s).match(/-?\d+(\.\d+)?/g)||[]).map(Number);
+function frameGeom(v){
+  if(!v||typeof v!=="object")return null;
+  let x,y,w,h,rf=false,sw,sh,ox=0,oy=0,cx,cy,hasOff=false;
+  if(v.textureRect!==undefined){ /* format 3 */
+    [x,y,w,h]=nums(v.textureRect);rf=!!v.textureRotated;[sw,sh]=nums(v.spriteSourceSize||v.spriteSize||"");
+    const o=nums(v.spriteOffset||"");ox=o[0]||0;oy=o[1]||0;hasOff=v.spriteOffset!==undefined;
+    if(Number.isFinite(sw)&&Number.isFinite(sh)&&sw>0&&sh>0){cx=(sw-w)/2+ox;cy=(sh-h)/2-oy}
+  }else if(v.frame!==undefined){ /* format 2 */
+    [x,y,w,h]=nums(v.frame);rf=!!v.rotated;[sw,sh]=nums(v.sourceSize||"");
+    const o=nums(v.offset||"");ox=o[0]||0;oy=o[1]||0;hasOff=v.offset!==undefined;
+    const sc=v.sourceColorRect?nums(v.sourceColorRect):[];if(sc.length>=2){cx=sc[0];cy=sc[1]}
+  }else if(v.width!==undefined&&v.height!==undefined){ /* format 0 / 1 */
+    x=+v.x;y=+v.y;w=+v.width;h=+v.height;rf=!!v.rotated;sw=+v.originalWidth;sh=+v.originalHeight;
+    ox=+v.offsetX||0;oy=+v.offsetY||0;hasOff=v.offsetX!==undefined||v.offsetY!==undefined;
+  }else return null;
+  if(![x,y,w,h].every(Number.isFinite)||w<0||h<0)return null;
+  if(w===0||h===0)return{empty:true,x:0,y:0,w:0,h:0,rf:false,sw:0,sh:0,cx:0,cy:0,po:null};
+  if(!(sw>0&&sh>0)){sw=w;sh=h}
+  if(!Number.isFinite(cx)||!Number.isFinite(cy)){cx=(sw-w)/2+ox;cy=(sh-h)/2-oy}
+  return{x,y,w,h,rf,sw,sh,cx,cy,po:hasOff?[ox,oy]:null};
+}
 async function unpackFrames(png,pl){
   const txt=await pl.text();if(/^bplist/.test(txt))throw new Error(t("badPlist"));
   const doc=new DOMParser().parseFromString(txt,"text/xml"),rd=doc.querySelector("plist > dict")||doc.querySelector("dict");if(doc.querySelector("parsererror")||!rd)throw new Error(t("badPlist"));
   const root=pv(rd),img=await createImageBitmap(png),out=[];
   for(const[key,v]of Object.entries(root.frames||{})){
-    const f3=((root.metadata||{}).format||2)>=3;let x,y,w,h,rot,rf,sw,sh,cx=0,cy=0,po=null;
-    if(f3){[x,y,w,h]=nums(v.textureRect);rf=!!v.textureRotated;rot=rf&&!S.ignoreRot;[sw,sh]=nums(v.spriteSourceSize);const o=nums(v.spriteOffset);cx=(sw-w)/2+o[0];cy=(sh-h)/2-o[1];if(v.spriteOffset)po=[o[0]||0,o[1]||0]}
-    else{[x,y,w,h]=nums(v.frame||v.textureRect);rf=!!v.rotated;rot=rf&&!S.ignoreRot;[sw,sh]=nums(v.sourceSize||`{${w},${h}}`);
-      const[ox,oy]=nums(v.offset||"{0,0}");if(v.offset)po=[ox||0,oy||0];
-      if(v.sourceColorRect)[cx,cy]=nums(v.sourceColorRect);else{cx=(sw-w)/2+ox;cy=(sh-h)/2-oy}}
+    const g=frameGeom(v);if(!g)continue;
+    if(g.empty){out.push({name:stripImg(key),ext:extOf(key),canvas:mk(1,1),po:null,rf:false,empty:true});continue}
+    const{x,y,w,h,rf,sw,sh,cx,cy,po}=g,rot=rf&&!S.ignoreRot;
     const full=mk(sw,sh),c=full.getContext("2d");c.translate(cx,cy);
     if(rot){c.translate(0,h);c.rotate(-Math.PI/2);c.drawImage(img,x,y,h,w,0,0,h,w)}else c.drawImage(img,x,y,w,h,0,0,w,h);
-    out.push({name:strip(key),canvas:full,po,rf});
+    out.push({name:stripImg(key),ext:extOf(key),canvas:full,po,rf,rc:[cx,cy,w,h]});
   }
   if(!out.length)throw new Error(t("noFrames"));
   return out;
@@ -294,14 +314,14 @@ const idbDel=k=>idb("readwrite",s=>s.delete(k)).catch(()=>{});
 let pt=0;
 function persist(){clearTimeout(pt);pt=setTimeout(async()=>{
   const route=S.route,frames=S.frames;if(route==="unpack"||!frames.length)return;
-  try{const fr=[];for(const f of frames){const bl=await fpng(f);fr.push({name:f.name,blob:bl,sw:f.sw,sh:f.sh,tx:f.tx,ty:f.ty,w:f.w,h:f.h,dx:f.dx,dy:f.dy})}
+  try{const fr=[];for(const f of frames){const bl=await fpng(f);fr.push({name:f.name,blob:bl,sw:f.sw,sh:f.sh,tx:f.tx,ty:f.ty,w:f.w,h:f.h,dx:f.dx,dy:f.dy,ext:f.ext,em:f.empty?1:0})}
     await idbSet(route,{fr,name:S.name,pad:S.pad,atlasName:S.atlasName})}catch(e){}
 },400)}
 async function restore(route){
   if(route==="unpack")return;
   const rec=await idbGet(route);if(!rec||!rec.fr||!rec.fr.length||S.route!==route||S.frames.length)return;
   try{const fr=[];for(const r of rec.fr){const bm=await createImageBitmap(r.blob),c=mk(r.w,r.h);c.getContext("2d").drawImage(bm,0,0);
-      fr.push({name:r.name,canvas:c,sw:r.sw,sh:r.sh,tx:r.tx,ty:r.ty,w:r.w,h:r.h,dx:r.dx||0,dy:r.dy||0,_pp:Promise.resolve(r.blob)})}
+      fr.push({name:r.name,canvas:c,sw:r.sw,sh:r.sh,tx:r.tx,ty:r.ty,w:r.w,h:r.h,dx:r.dx||0,dy:r.dy||0,ext:r.ext,empty:!!r.em,_pp:Promise.resolve(r.blob)})}
     if(S.route!==route||S.frames.length)return;
     S.frames=fr;S.name=rec.name||"atlas";S.pad=rec.pad==null?1:rec.pad;S.atlasName=rec.atlasName||"atlas";sortF();S.idx=0;S.res=null;render();
   }catch(e){}
@@ -339,8 +359,8 @@ function sortF(){
     const a=G.get(b);
     a.sort((x,y)=>(x.num===null)-(y.num===null)||(x.num-y.num)||NC(x.orig,y.orig));
     const sep=(a.find(f=>f.num!==null&&f.sep)||{sep:b&&a.some(f=>f.num!==null)?"":""}).sep;
-    if(a.length===1&&a[0].num===null)a[0].name=b;
-    else a.forEach((f,i)=>{f.name=b+(b?sep:"")+(i+1)});
+    if(S.route==="pack"){if(a.length===1&&a[0].num===null)a[0].name=b;
+    else a.forEach((f,i)=>{f.name=b+(b?sep:"")+(i+1)})}
     out.push(...a);
   });
   S.frames=out;S.groups=[...G.keys()];
@@ -358,9 +378,9 @@ async function intake(files){
     }else{
       const png=files.find(f=>/\.png$/i.test(f.name))||S.pPng,pl=files.find(f=>/\.(plist|xml)$/i.test(f.name))||S.pPl;
       if(!png||!pl){S.pPng=png;S.pPl=pl;msg=(png||pl)?t("got")((png||pl).name):t("needBoth")}else{S.pPng=S.pPl=null;
-        const fr=await unpackFrames(png,pl);S.rotN=fr.filter(f=>f.rf).length;S.atlasName=strip(png.name);
-        S.frames=S.route==="repack"?fr.map(f=>{const t=trim(f.name,f.canvas);
-          if(f.po){const r3=n=>Math.round(n*1000)/1000;t.dx=r3(f.po[0]-(t.tx+t.w/2-t.sw/2));t.dy=r3(f.po[1]-(t.sh/2-(t.ty+t.h/2)))}return t}):fr;
+        const fr=await unpackFrames(png,pl);S.rotN=fr.filter(f=>f.rf).length;S.atlasName=strip(png.name);if(S.route==="repack")S.name=S.atlasName;
+        S.frames=S.route==="repack"?fr.map(f=>{const t=trim(f.name,f.canvas);t.ext=f.ext;if(f.empty)t.empty=true;
+          if(f.po){const r3=n=>Math.round(n*1000)/1000;t.dx=r3(f.po[0]-(f.rc[0]+f.rc[2]/2-t.sw/2));t.dy=r3(f.po[1]-(t.sh/2-(f.rc[1]+f.rc[3]/2)))}return t}):fr;
       }
     }
   }catch(e){msg=String(e.message||e)}
@@ -441,7 +461,7 @@ function render(msg){
     $("#zp").onclick=()=>busy($("#zp"),async set=>{const fr=S.frames,n=fr.length,out=new Array(n);let k=0,done=0;
       await Promise.all(Array.from({length:16},async()=>{while(k<n){const i=k++;out[i]={name:fr[i].name+".png",data:new Uint8Array(await(await fpng(fr[i])).arrayBuffer())};set(++done+" / "+n)}}));
       dl(zip(out),S.atlasName+"_frames.zip")});
-    prewarm(S.frames);
+    prewarm(S.frames).catch(()=>{});
     return;
   }
   if(!S.res)S.res=pack(S.frames,S.pad);
