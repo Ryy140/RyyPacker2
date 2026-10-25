@@ -540,23 +540,25 @@ function render(msg){
   if($("#gs"))$("#gs").onchange=e=>{S.group=e.target.value;S.idx=0;loop();sync()};
   $("#on").value=S.onion;$("#on").onchange=e=>{S.onion=+e.target.value;sync()};
   $("#zo").onclick=()=>{S.zoom=Math.max(.25,S.zoom/1.5);sync()};$("#zi").onclick=()=>{S.zoom=Math.min(10,S.zoom*1.5);sync()};$("#zr").onclick=()=>{S.zoom=1;sync()};
-  const setO=(a,val)=>{const f=GF()[S.idx];f["d"+a]=Math.max(-100,Math.min(100,+val||0));sync();persist()};
+  const setO=(a,val)=>{const f=GF()[S.idx],L=offLim(f,a);f["d"+a]=Math.max(-L,Math.min(L,+val||0));sync();persist()};
   ["x","y"].forEach(a=>{$("#r"+a).oninput=e=>setO(a,e.target.value);$("#n"+a).oninput=e=>setO(a,e.target.value)});
   v.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{const a=b.dataset.s[0],f=GF()[S.idx];setO(a,f["d"+a]+(b.dataset.s[1]==="+"?.5:-.5))});
-  $("#cp").onclick=()=>{const c=GF()[S.idx];GF().forEach(f=>{f.dx=c.dx;f.dy=c.dy});persist()};
+  $("#cp").onclick=()=>{const c=GF()[S.idx];GF().forEach(f=>{const lx=offLim(f,"x"),ly=offLim(f,"y");f.dx=Math.max(-lx,Math.min(lx,c.dx));f.dy=Math.max(-ly,Math.min(ly,c.dy))});persist()};
   const go=d=>{const m=GF().length;S.idx=(S.idx+d+m)%m;sync()};
   $("#pv").onclick=()=>{S.play=false;go(-1)};$("#pn").onclick=()=>{S.play=false;go(1)};
   $("#pp").onclick=()=>{S.play=!S.play;loop();sync()};
   $("#fp").value=S.fps;$("#fp").oninput=e=>{S.fps=+e.target.value;loop();sync()};
   renderList();updateHL();sync();loop();persist();const rr=S.res;setTimeout(()=>{if(S.res===rr)atlasBlob()},300);
 }
+/* offset limit = frame sourceSize (x -> width, y -> height); never below an already-stored value */
+function offLim(f,a){const base=a==="x"?f.sw:f.sh;return Math.max(base||0,Math.ceil(Math.abs(f["d"+a]||0)),1)}
 function loop(){clearInterval(S.timer);const n=GF().length;if(S.play&&n>1)S.timer=setInterval(()=>{S.idx=(S.idx+1)%n;sync()},1000/S.fps)}
 function sync(){
   const L=GF(),n=L.length;if(S.idx>=n)S.idx=0;const f=L[S.idx];if(!f||!$("#ac"))return;
   document.querySelectorAll("#sg button").forEach(b=>b.classList.toggle("on",+b.dataset.a===S.anchor));
   $("#zl").textContent=Math.round(S.zoom*100)+"%";$("#pp").textContent=S.play?"⏸":"▶";
   $("#fl").textContent=S.fps+" FPS";$("#fn").textContent=f.name+".png";
-  ["x","y"].forEach(a=>{$("#r"+a).value=f["d"+a];if(document.activeElement!==$("#n"+a))$("#n"+a).value=f["d"+a]});
+  ["x","y"].forEach(a=>{const L=offLim(f,a);$("#r"+a).min=-L;$("#r"+a).max=L;$("#r"+a).value=f["d"+a];if(document.activeElement!==$("#n"+a))$("#n"+a).value=f["d"+a]});
   const A=[[f.sw/2,f.sh],[0,f.sh],[f.sw/2,f.sh/2],[0,0]][S.anchor];
   $("#fi2").textContent=t("fr")(S.idx+1,n,t("a"+S.anchor),fmt(f.tx+f.w/2+f.dx-A[0]),fmt(A[1]-(f.ty+f.h/2)+f.dy));
   const c=$("#ac"),W=c.width=c.clientWidth,H=c.height=c.clientHeight,x=c.getContext("2d"),z=S.zoom,px=W/2,py=H*.78;
